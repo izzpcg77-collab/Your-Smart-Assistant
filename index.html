@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مُذاكِر الذكي | Smart Study</title>
+<!-- تطوير: عبدالمؤمن يزيد سلامة أبوسويرح -->
+<style>
+:root{--p:#1d5fd1;--p2:#0e3b8c;--soft:#e8f0fe;--bg:#f5f8ff;--card:#fff;--tx:#14213d;--mut:#5b6b8c;--bd:#d6e0f5;--ok:#1a9b5a;--bad:#d64545;--r:14px}
+[data-theme=teal]{--p:#0f9488;--p2:#0a5f57;--soft:#e0f5f2;--bg:#f2fbfa;--bd:#cfe9e5}
+[data-theme=violet]{--p:#6b4fd8;--p2:#3f2a9c;--soft:#ece8fc;--bg:#f7f5ff;--bd:#ddd6f6}
+[data-theme=dark]{--p:#5b9bff;--p2:#9cc2ff;--soft:#1b2744;--bg:#0c1428;--card:#131d38;--tx:#e8eefc;--mut:#9aa9cc;--bd:#25335a}
+*{box-sizing:border-box;margin:0}
+body{font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex}
+aside{width:250px;background:linear-gradient(180deg,var(--p2),var(--p));color:#fff;padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{font-size:1.35rem;font-weight:800;padding:0 10px 4px}
+.dev{font-size:.72rem;opacity:.85;padding:0 10px 18px;line-height:1.6}
+.nav{background:transparent;border:0;color:#fff;text-align:right;padding:12px 14px;border-radius:10px;font:inherit;cursor:pointer;display:flex;gap:10px;align-items:center}
+.nav:hover{background:rgba(255,255,255,.14)}
+.nav.on{background:#fff;color:var(--p2);font-weight:700}
+main{flex:1;padding:28px;max-width:1000px;margin:auto;width:100%}
+h1{font-size:1.6rem;margin-bottom:6px}
+.sub{color:var(--mut);margin-bottom:20px}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:20px;margin-bottom:18px}
+.drop{border:2px dashed var(--p);background:var(--soft);border-radius:var(--r);padding:40px 16px;text-align:center;cursor:pointer;transition:.15s}
+.drop.over{background:var(--p);color:#fff}
+.drop b{font-size:1.1rem}
+.btn{background:var(--p);color:#fff;border:0;padding:11px 20px;border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--p2)}.btn:disabled{opacity:.5;cursor:wait}
+.btn.alt{background:var(--soft);color:var(--p)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+label{display:block;font-weight:600;margin:12px 0 5px;font-size:.92rem}
+select,input,textarea{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;font:inherit;background:var(--card);color:var(--tx)}
+textarea{min-height:140px;resize:vertical}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.files{list-style:none;padding:0;margin-top:12px}
+.files li{padding:8px 12px;background:var(--soft);border-radius:8px;margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.bar{height:8px;background:var(--soft);border-radius:8px;overflow:hidden;margin-top:12px;display:none}
+.bar i{display:block;height:100%;width:0;background:var(--p);transition:width .2s}
+.status{margin-top:10px;color:var(--mut);font-size:.9rem}
+.result{line-height:2;font-size:1.02rem}
+.result h2,.result h3{color:var(--p);margin:16px 0 6px}
+.result ul{padding-inline-start:22px}
+.q{border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:14px;background:var(--card)}
+.q h4{margin-bottom:10px;line-height:1.7}
+.opt{display:block;width:100%;text-align:right;background:var(--soft);color:var(--tx);border:2px solid transparent;border-radius:10px;padding:10px 12px;margin-bottom:8px;font:inherit;cursor:pointer}
+.opt:hover{border-color:var(--p)}
+.opt.right{background:#d8f3e5;border-color:var(--ok);color:#0b5a33}
+.opt.wrong{background:#fbdcdc;border-color:var(--bad);color:#7a1c1c}
+.exp{display:none;margin-top:8px;color:var(--mut);font-size:.92rem}
+.score{font-size:1.2rem;font-weight:800;color:var(--p);text-align:center;padding:12px}
+.themes{display:flex;gap:10px;flex-wrap:wrap}
+.sw{width:46px;height:46px;border-radius:50%;border:3px solid var(--bd);cursor:pointer}
+.sw.on{border-color:var(--tx)}
+footer{text-align:center;color:var(--mut);font-size:.8rem;margin-top:24px}
+@media(max-width:800px){
+ body{flex-direction:column}
+ aside{width:100%;height:auto;position:fixed;bottom:0;top:auto;flex-direction:row;padding:6px;z-index:9;justify-content:space-around}
+ .brand,.dev{display:none}
+ .nav{flex-direction:column;font-size:.72rem;padding:6px 8px;gap:2px;text-align:center}
+ main{padding:16px 14px 90px}
+}
+</style>
+</head>
+<body>
+<aside>
+ <div class="brand">📘 مُذاكِر الذكي</div>
+ <div class="dev">تطوير: عبدالمؤمن يزيد سلامة أبوسويرح</div>
+ <button class="nav on" data-v="dash"><span>🏠</span>لوحة التحكم</button>
+ <button class="nav" data-v="sum"><span>📝</span>التلخيص</button>
+ <button class="nav" data-v="quiz"><span>🎯</span>الاختبارات الذكية</button>
+ <button class="nav" data-v="set"><span>⚙️</span>الإعدادات</button>
+</aside>
+
+<main>
+<!-- لوحة التحكم -->
+<section class="view on" id="dash">
+ <h1>لوحة التحكم</h1>
+ <p class="sub">ارفع ملفاتك (PDF أو صور) وسيتم استخراج النص منها داخل المتصفح مباشرة.</p>
+ <div class="card">
+  <div class="drop" id="drop"><b>اسحب الملفات وأفلتها هنا</b><br><span class="sub">أو اضغط للاختيار · PDF, PNG, JPG</span></div>
+  <input type="file" id="fileIn" accept=".pdf,image/*" multiple hidden>
+  <ul class="files" id="files"></ul>
+  <div class="bar" id="bar"><i id="barI"></i></div>
+  <div class="status" id="status"></div>
+ </div>
+ <div class="card">
+  <label for="text">النص المستخرج (يمكنك تعديله أو لصق نص مباشرة)</label>
+  <textarea id="text" placeholder="سيظهر النص هنا..."></textarea>
+  <div class="row">
+   <button class="btn" id="goSum">تلخيص المادة</button>
+   <button class="btn alt" id="goQuiz">توليد اختبار منها</button>
+   <button class="btn alt" id="clr">مسح</button>
+  </div>
+ </div>
+</section>
+
+<!-- التلخيص -->
+<section class="view" id="sum">
+ <h1>التلخيص</h1>
+ <p class="sub">تلخيص شامل ومنظم للمادة الدراسية.</p>
+ <div class="card"><div class="row" style="margin:0"><button class="btn" id="runSum">لخّص النص الحالي</button><button class="btn alt" id="copySum">نسخ</button></div>
+ <div class="status" id="sumSt"></div></div>
+ <div class="card"><div class="result" id="sumOut">لا يوجد تلخيص بعد.</div></div>
+</section>
+
+<!-- الاختبارات -->
+<section class="view" id="quiz">
+ <h1>الاختبارات الذكية</h1>
+ <p class="sub">اختر المرحلة والمادة، أو اترك الاختيار واعتمد على الملف المرفوع.</p>
+ <div class="card">
+  <div class="grid">
+   <div><label>المرحلة</label><select id="stage"></select></div>
+   <div><label>الصف / السنة</label><select id="grade"></select></div>
+   <div id="trackBox"><label>الشعبة / التخصص</label><select id="track"></select></div>
+   <div><label>المادة</label><select id="subject"></select></div>
+   <div><label>عدد الأسئلة</label><select id="count"><option>5</option><option selected>10</option><option>15</option><option>20</option></select></div>
+   <div><label>المستوى</label><select id="level"><option>سهل</option><option selected>متوسط</option><option>صعب</option></select></div>
+  </div>
+  <label>الموضوع / اسم المقرر (اختياري)</label>
+  <input id="topic" placeholder="مثال: الكسور، قوانين نيوتن، هياكل البيانات...">
+  <label class="sub" style="font-weight:400"><input type="checkbox" id="useText" style="width:auto"> الاعتماد على النص المستخرج من الملفات (بدل بنك المراحل)</label>
+  <div class="row"><button class="btn" id="runQuiz">توليد الاختبار</button></div>
+  <div class="status" id="quizSt"></div>
+ </div>
+ <div id="quizOut"></div>
+</section>
+
+<!-- الإعدادات -->
+<section class="view" id="set">
+ <h1>الإعدادات</h1>
+ <div class="card">
+  <label>لون التطبيق</label>
+  <div class="themes" id="themes"></div>
+  <p class="sub" style="margin-top:8px">اختر اللون وسيُحفظ تلقائياً.</p>
+ </div>
+ <div class="card">
+  <label>مزوّد الذكاء الاصطناعي</label>
+  <select id="prov"><option value="gemini">Google Gemini (يوجد مستوى مجاني)</option><option value="openai">OpenAI</option></select>
+  <label>مفتاح API</label>
+  <input id="key" type="password" placeholder="الصق مفتاحك هنا" autocomplete="off">
+  <label>اسم النموذج</label>
+  <input id="model" placeholder="gemini-2.0-flash">
+  <label>لغة المخرجات</label>
+  <select id="lang"><option value="العربية">العربية</option><option value="English">English</option></select>
+  <div class="row"><button class="btn" id="saveSet">حفظ الإعدادات</button></div>
+  <div class="status" id="setSt"></div>
+  <p class="sub" style="margin-top:12px">احصل على مفتاح Gemini مجاناً من: aistudio.google.com/apikey — يُحفظ المفتاح على جهازك فقط.</p>
+ </div>
+</section>
+<footer>تطوير: عبدالمؤمن يزيد سلامة أبوسويرح</footer>
+</main>
+
+<!-- المكتبات -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js"></script>
+<script>
+"use strict";
+/* ========== الإعدادات الافتراضية ========== */
+// اختياري: ضع مفتاحك هنا ليبقى ثابتاً في نسختك الخاصة فقط. لا تنشر الملف علناً وفيه مفتاح.
+const DEFAULT_KEY = "";
+
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+};
+
+/* ========== التنقل ========== */
+function show(v){
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === v));
+  document.querySelectorAll(".nav").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll(".nav").forEach(b => b.onclick = () => show(b.dataset.v));
+
+/* ========== الألوان ========== */
+const THEMES = [["blue","#1d5fd1","أزرق"],["teal","#0f9488","تركوازي"],["violet","#6b4fd8","بنفسجي"],["dark","#0c1428","داكن"]];
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme", t);
+  store.set("theme", t);
+  document.querySelectorAll(".sw").forEach(s => s.classList.toggle("on", s.dataset.t === t));
+}
+THEMES.forEach(([id, c, n]) => {
+  const s = document.createElement("div");
+  s.className = "sw"; s.dataset.t = id; s.title = n; s.style.background = c;
+  s.onclick = () => applyTheme(id);
+  $("themes").appendChild(s);
+});
+applyTheme(store.get("theme", "blue"));
+
+/* ========== حفظ الإعدادات ========== */
+$("prov").value = store.get("prov", "gemini");
+$("key").value = store.get("key", DEFAULT_KEY);
+$("model").value = store.get("model", "gemini-2.0-flash");
+$("lang").value = store.get("lang", "العربية");
+$("prov").onchange = () => { $("model").value = $("prov").value === "gemini" ? "gemini-2.0-flash" : "gpt-4o-mini"; };
+$("saveSet").onclick = () => {
+  ["prov","key","model","lang"].forEach(k => store.set(k, $(k).value.trim()));
+  $("setSt").textContent = "✅ تم الحفظ";
+};
+
+/* ========== رفع الملفات ========== */
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+const drop = $("drop"), fileIn = $("fileIn");
+drop.onclick = () => fileIn.click();
+["dragenter","dragover"].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(e => drop.addEventListener(e, ev => { ev.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", ev => handleFiles(ev.dataTransfer.files));
+fileIn.onchange = () => { handleFiles(fileIn.files); fileIn.value = ""; };
+
+function setProgress(p, msg){
+  $("bar").style.display = p === null ? "none" : "block";
+  if (p !== null) $("barI").style.width = Math.round(p * 100) + "%";
+  if (msg !== undefined) $("status").textContent = msg;
+}
+
+async function extractPDF(file){
+  const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+  let out = "";
+  for (let i = 1; i <= pdf.numPages; i++){
+    const page = await pdf.getPage(i);
+    const c = await page.getTextContent();
+    out += c.items.map(t => t.str).join(" ") + "\n\n";
+    setProgress(i / pdf.numPages, `قراءة ${file.name}: صفحة ${i} من ${pdf.numPages}`);
+  }
+  if (out.trim().length < 20){
+    out = "";
+    for (let i = 1; i <= pdf.numPages; i++){ // ملف ممسوح ضوئياً: OCR
+      const page = await pdf.getPage(i);
+      const vp = page.getViewport({ scale: 2 });
+      const cv = document.createElement("canvas");
+      cv.width = vp.width; cv.height = vp.height;
+      await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+      out += await ocr(cv, `OCR ${file.name} صفحة ${i}/${pdf.numPages}`) + "\n\n";
+    }
+  }
+  return out;
+}
+
+async function ocr(src, label){
+  const r = await Tesseract.recognize(src, "ara+eng", {
+    logger: m => { if (m.status === "recognizing text") setProgress(m.progress, label + " ..."); }
+  });
+  return r.data.text;
+}
+
+async function handleFiles(list){
+  for (const f of list){
+    const li = document.createElement("li");
+    li.innerHTML = `<span></span><span>⏳</span>`;
+    li.firstChild.textContent = f.name;
+    $("files").appendChild(li);
+    try{
+      let t = "";
+      if (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) t = await extractPDF(f);
+      else if (f.type.startsWith("image/")) t = await ocr(f, "OCR " + f.name);
+      else throw new Error("نوع غير مدعوم");
+      $("text").value += (($("text").value ? "\n\n" : "") + t.trim());
+      li.lastChild.textContent = "✅";
+    }catch(e){
+      li.lastChild.textContent = "❌";
+      $("status").textContent = "خطأ في " + f.name + ": " + e.message;
+    }
+  }
+  setProgress(null, "اكتملت المعالجة.");
+}
+$("clr").onclick = () => { $("text").value = ""; $("files").innerHTML = ""; $("status").textContent = ""; };
+
+/* ========== الاتصال بالذكاء الاصطناعي ========== */
+async function askAI(prompt, wantJSON){
+  const key = $("key").value.trim() || DEFAULT_KEY;
+  if (!key) throw new Error("أضف مفتاح API في صفحة الإعدادات أولاً.");
+  const model = $("model").value.trim() || "gemini-2.0-flash";
+  let res, data;
+  if ($("prov").value === "gemini"){
+    const body = { contents: [{ parts: [{ text: prompt }] }] };
+    if (wantJSON) body.generationConfig = { responseMimeType: "application/json" };
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(key)}`,
+      { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "فشل الطلب");
+    return data.candidates?.[0]?.content?.parts?.map(p => p.text).join("") || "";
+  }
+  res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+    body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }] })
+  });
+  data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || "فشل الطلب");
+  return data.choices?.[0]?.message?.content || "";
+}
+
+function esc(s){ return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function md(s){ // تحويل بسيط لـ Markdown
+  const lines = esc(s).split("\n"); let h = "", ul = false;
+  for (const l of lines){
+    const b = t => t.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+    if (/^\s*[-*] /.test(l)){ if (!ul){ h += "<ul>"; ul = true; } h += "<li>" + b(l.replace(/^\s*[-*] /, "")) + "</li>"; continue; }
+    if (ul){ h += "</ul>"; ul = false; }
+    if (/^###? /.test(l)) h += "<h3>" + b(l.replace(/^#+ /, "")) + "</h3>";
+    else if (/^#+ /.test(l)) h += "<h2>" + b(l.replace(/^#+ /, "")) + "</h2>";
+    else if (l.trim()) h += "<p>" + b(l) + "</p>";
+  }
+  return h + (ul ? "</ul>" : "");
+}
+
+/* ========== التلخيص ========== */
+async function summarize(){
+  const t = $("text").value.trim();
+  if (t.length < 30){ $("sumSt").textContent = "ارفع ملفاً أو الصق نصاً في لوحة التحكم أولاً."; return; }
+  $("runSum").disabled = true; $("sumSt").textContent = "جارٍ التلخيص...";
+  try{
+    const prompt = `أنت معلم خبير. لخّص المادة الدراسية التالية تلخيصاً شاملاً ومنظماً باللغة ${$("lang").value}.
+استخدم عناوين (##) ونقاطاً (-) وأبرز المصطلحات بخط عريض (**)، واختم بقسم "أهم النقاط للمراجعة".
+المادة:
+${t.slice(0, 30000)}`;
+    $("sumOut").innerHTML = md(await askAI(prompt, false));
+    $("sumSt").textContent = "";
+  }catch(e){ $("sumSt").textContent = "❌ " + e.message; }
+  $("runSum").disabled = false;
+}
+$("runSum").onclick = summarize;
+$("goSum").onclick = () => { show("sum"); summarize(); };
+$("copySum").onclick = () => navigator.clipboard?.writeText($("sumOut").innerText);
+$("goQuiz").onclick = () => { show("quiz"); $("useText").checked = true; };
+
+/* ========== بنك المراحل الدراسية ========== */
+const S = {
+  prim: ["اللغة العربية","الرياضيات","العلوم","اللغة الإنجليزية","الدراسات الاجتماعية","التربية الدينية","الحاسب الآلي"],
+  prep: ["اللغة العربية","الرياضيات","العلوم","اللغة الإنجليزية","الدراسات الاجتماعية","التربية الدينية","الحاسب الآلي","اللغة الفرنسية"],
+  sec1: ["اللغة العربية","اللغة الإنجليزية","الرياضيات","الفيزياء","الكيمياء","الأحياء","التاريخ","الجغرافيا","الفلسفة والمنطق","الحاسب الآلي"],
+  sci: ["اللغة العربية","اللغة الإنجليزية","الفيزياء","الكيمياء","الأحياء","الجيولوجيا","اللغة الأجنبية الثانية"],
+  math: ["اللغة العربية","اللغة الإنجليزية","الرياضيات البحتة","الرياضيات التطبيقية (ميكانيكا)","الفيزياء","الكيمياء","اللغة الأجنبية الثانية"],
+  art: ["اللغة العربية","اللغة الإنجليزية","التاريخ","الجغرافيا","الفلسفة والمنطق","علم النفس والاجتماع","الإحصاء","اللغة الأجنبية الثانية"]
+};
+const N = ["الأول","الثاني","الثالث","الرابع","الخامس","السادس"];
+const UNI = {
+  "الطب البشري":["التشريح","الفسيولوجي","الكيمياء الحيوية","علم الأمراض","الأدوية","الباطنة","الجراحة","الأطفال","النساء والتوليد"],
+  "طب الأسنان":["تشريح الأسنان","المواد السنية","علاج الجذور","تقويم الأسنان","جراحة الفم"],
+  "الصيدلة":["الكيمياء الدوائية","الصيدلانيات","العقاقير","الأدوية السريرية","الأدوية الحيوية"],
+  "التمريض":["أساسيات التمريض","تمريض الباطنة والجراحة","تمريض الأطفال","تمريض صحة المجتمع"],
+  "الهندسة المدنية":["الإنشاءات","ميكانيكا التربة","هندسة المياه","هندسة الطرق","مقاومة المواد"],
+  "الهندسة الكهربائية":["الدوائر الكهربائية","الإلكترونيات","نظم التحكم","القوى الكهربائية","الاتصالات"],
+  "الهندسة الميكانيكية":["الديناميكا الحرارية","ميكانيكا الموائع","تصميم الآلات","انتقال الحرارة"],
+  "علوم الحاسب":["هياكل البيانات","الخوارزميات","قواعد البيانات","نظم التشغيل","شبكات الحاسب","الذكاء الاصطناعي","هندسة البرمجيات","الأمن السيبراني"],
+  "العلوم":["الكيمياء العضوية","الفيزياء العامة","التفاضل والتكامل","علم الحيوان","علم النبات","الجيولوجيا","الإحصاء"],
+  "التجارة وإدارة الأعمال":["المحاسبة المالية","الاقتصاد","إدارة التسويق","إدارة الموارد البشرية","التمويل","الإحصاء"],
+  "الحقوق":["القانون المدني","القانون الجنائي","القانون الدستوري","القانون التجاري","القانون الدولي"],
+  "الآداب":["اللغة العربية","اللغة الإنجليزية","التاريخ","الجغرافيا","علم النفس","علم الاجتماع","الإعلام"],
+  "التربية":["أصول التربية","علم النفس التربوي","طرق التدريس","المناهج","القياس والتقويم"],
+  "الزراعة":["الإنتاج النباتي","الإنتاج الحيواني","الأراضي والمياه","وقاية النبات","الصناعات الغذائية"],
+  "الطب البيطري":["التشريح البيطري","الفسيولوجي البيطري","أمراض الحيوان","الطفيليات"],
+  "العلوم السياسية والاقتصاد":["النظرية السياسية","الاقتصاد الكلي","الاقتصاد الجزئي","العلاقات الدولية"],
+  "الفنون والعمارة":["التصميم المعماري","تاريخ العمارة","الإنشاء المعماري","التخطيط العمراني"],
+  "الشريعة والدراسات الإسلامية":["الفقه","أصول الفقه","التفسير","الحديث","العقيدة"],
+  "تخصص آخر (اكتب المقرر في الأسفل)":["مقرر عام"]
+};
+const STAGES = {
+  "المرحلة الابتدائية": { grades: N.map(n => "الصف " + n + " الابتدائي"), subjects: () => S.prim },
+  "المرحلة الإعدادية": { grades: N.slice(0,3).map(n => "الصف " + n + " الإعدادي"), subjects: () => S.prep },
+  "المرحلة الثانوية": {
+    grades: N.slice(0,3).map(n => "الصف " + n + " الثانوي"),
+    tracks: g => g === 0 ? { "عام": S.sec1 } : { "علمي علوم": S.sci, "علمي رياضة": S.math, "أدبي": S.art }
+  },
+  "المرحلة الجامعية": { grades: ["الفرقة الأولى","الفرقة الثانية","الفرقة الثالثة","الفرقة الرابعة","الفرقة الخامسة","الفرقة السادسة","دراسات عليا"], tracks: () => UNI }
+};
+
+function fill(sel, arr){ sel.innerHTML = arr.map(v => `<option>${esc(v)}</option>`).join(""); }
+function onStage(){
+  const st = STAGES[$("stage").value];
+  fill($("grade"), st.grades);
+  onGrade();
+}
+function onGrade(){
+  const st = STAGES[$("stage").value];
+  if (st.tracks){
+    $("trackBox").style.display = "";
+    fill($("track"), Object.keys(st.tracks($("grade").selectedIndex)));
+  } else $("trackBox").style.display = "none";
+  onTrack();
+}
+function onTrack(){
+  const st = STAGES[$("stage").value];
+  const subs = st.tracks ? st.tracks($("grade").selectedIndex)[$("track").value] : st.subjects();
+  fill($("subject"), subs || []);
+}
+fill($("stage"), Object.keys(STAGES));
+$("stage").onchange = onStage; $("grade").onchange = onGrade; $("track").onchange = onTrack;
+onStage();
+
+/* ========== توليد الاختبارات ========== */
+let score = 0, answered = 0, total = 0;
+async function makeQuiz(){
+  const n = $("count").value, lang = $("lang").value;
+  let ctx;
+  if ($("useText").checked){
+    const t = $("text").value.trim();
+    if (t.length < 30){ $("quizSt").textContent = "لا يوجد نص مستخرج. ارفع ملفاً أولاً أو ألغِ الخيار."; return; }
+    ctx = `اعتمد فقط على المادة التالية:\n${t.slice(0, 30000)}`;
+  } else {
+    ctx = `المرحلة: ${$("stage").value}\nالصف/السنة: ${$("grade").value}\n` +
+      ($("trackBox").style.display === "none" ? "" : `الشعبة/التخصص: ${$("track").value}\n`) +
+      `المادة: ${$("subject").value}\nالموضوع: ${$("topic").value.trim() || "منهج المادة بشكل عام"}\n` +
+      `ولّد الأسئلة وفق المنهج الدراسي المعتمد لهذه المرحلة ومستوى طلابها.`;
+  }
+  const prompt = `أنت مُعدّ اختبارات محترف. أنشئ ${n} سؤال اختيار من متعدد (MCQ) بمستوى ${$("level").value} باللغة ${lang}.
+${ctx}
+أعد JSON فقط بدون أي نص آخر وبدون علامات Markdown، بهذا الشكل:
+[{"q":"نص السؤال","options":["أ","ب","ج","د"],"answer":0,"explanation":"شرح مختصر للإجابة"}]
+حيث answer هو رقم الخيار الصحيح (0 إلى 3). كل سؤال له 4 خيارات بالضبط ومتنوعة الصحيحة.`;
+  $("runQuiz").disabled = true; $("quizSt").textContent = "جارٍ توليد الأسئلة...";
+  try{
+    let raw = (await askAI(prompt, true)).replace(/```json|```/g, "").trim();
+    const a = raw.indexOf("["), b = raw.lastIndexOf("]");
+    const qs = JSON.parse(raw.slice(a, b + 1));
+    renderQuiz(qs);
+    $("quizSt").textContent = "";
+  }catch(e){ $("quizSt").textContent = "❌ " + e.message; }
+  $("runQuiz").disabled = false;
+}
+function renderQuiz(qs){
+  score = 0; answered = 0; total = qs.length;
+  const out = $("quizOut"); out.innerHTML = "";
+  qs.forEach((q, i) => {
+    const d = document.createElement("div"); d.className = "q";
+    const h = document.createElement("h4"); h.textContent = (i + 1) + ". " + q.q; d.appendChild(h);
+    const ex = document.createElement("div"); ex.className = "exp"; ex.textContent = "💡 " + (q.explanation || "");
+    const btns = q.options.map((o, k) => {
+      const bt = document.createElement("button"); bt.className = "opt"; bt.textContent = o;
+      bt.onclick = () => {
+        btns.forEach((x, j) => { x.disabled = true; if (j === q.answer) x.classList.add("right"); });
+        if (k === q.answer) score++; else bt.classList.add("wrong");
+        ex.style.display = "block"; answered++;
+        if (answered === total) $("final").textContent = `النتيجة النهائية: ${score} من ${total}`;
+      };
+      d.appendChild(bt); return bt;
+    });
+    d.appendChild(ex); out.appendChild(d);
+  });
+  const f = document.createElement("div"); f.className = "score"; f.id = "final"; out.appendChild(f);
+}
+$("runQuiz").onclick = makeQuiz;
+</script>
+</body>
+</html>
